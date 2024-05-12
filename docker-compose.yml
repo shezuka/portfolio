@@ -11,7 +11,7 @@ services:
       - '3000:3000'
     environment:
       - NODE_ENV=development
-      - WEBSITE_URL=http://localhost:3000
+      - WEBSITE_URL=https://localhost
     command: ['npm', 'run', 'dev']
     develop:
       watch:
