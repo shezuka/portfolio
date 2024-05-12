@@ -1,0 +1,66 @@
+version: '2'
+services:
+  portfolio-frontend-nextjs-dev:
+    profiles: [dev]
+    build:
+      context: ./portfolio-frontend-nextjs
+    volumes:
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=development
+      - WEBSITE_URL=http://localhost:3000
+    command: ['npm', 'run', 'dev']
+    develop:
+      watch:
+        - action: sync
+          path: ./portfolio-frontend-nextjs
+          target: /app
+        - action: rebuild
+          path: ./portfolio-frontend-nextjs/package.json
+    networks:
+      - webnet-dev
+  nginx-dev:
+    profiles: [dev]
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/dev/conf:/etc/nginx/conf.d
+      - ./nginx/dev/certs:/etc/nginx/certs
+    depends_on:
+      - portfolio-frontend-nextjs-dev
+    networks:
+      - webnet-dev
+
+  portfolio-frontend-nextjs:
+    profiles: [prod]
+    build:
+      context: ./portfolio-frontend-nextjs
+    environment:
+      - NODE_ENV=production
+      - WEBSITE_URL=https://dihor.dev
+    networks:
+      - webnet
+  nginx:
+    profiles: [prod]
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf:/etc/nginx/conf.d
+      - ./nginx/certs:/etc/nginx/certs
+    depends_on:
+      - portfolio-frontend-nextjs
+    networks:
+      - webnet
+
+networks:
+  webnet:
+    driver: bridge
+  webnet-dev:
+    driver: bridge
