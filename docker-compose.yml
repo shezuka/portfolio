@@ -1,17 +1,19 @@
-version: '2'
+#version: '2'
 services:
   portfolio-frontend-nextjs-dev:
     profiles: [dev]
+    restart: unless-stopped
     build:
       context: ./portfolio-frontend-nextjs
     volumes:
       - /app/node_modules
       - /app/.next
-    ports:
-      - '3000:3000'
+    #ports:
+    #  - '3000:3000'
     environment:
       - NODE_ENV=development
       - WEBSITE_URL=https://localhost
+      - BACKEND_HOSTNAME=http://portfolio-backend-fastapi-dev:8000
     command: ['npm', 'run', 'dev']
     develop:
       watch:
@@ -20,33 +22,79 @@ services:
           target: /app
         - action: rebuild
           path: ./portfolio-frontend-nextjs/package.json
+        - action: rebuild
+          path: ./portfolio-frontend-nextjs/package.lock
     networks:
       - webnet-dev
+  portfolio-backend-fastapi-dev:
+    profiles: [dev]
+    restart: unless-stopped
+    build:
+      context: ./portfolio-backend-fastapi
+    environment:
+      - DATABASE_URI=postgresql://portfolio:portfolio@db-dev/portfolio
+      - APP_SECRET=dihordev
+    #ports:
+    #  - "8000:8000"
+    command: ["poetry", "run", "uvicorn", "portfolio_backend_fastapi.main:app", "--host=0.0.0.0", "--reload"]
+    networks:
+      - webnet-dev
+    volumes:
+      - /root/.cache/pypoetry/virtualenvs
+    develop:
+      watch:
+        - action: sync
+          path: ./portfolio-backend-fastapi
+          target: /app
+        - action: rebuild
+          path: ./portfolio-backend-fastapi/pyproject.toml
   nginx-dev:
     profiles: [dev]
     image: nginx:alpine
+    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./nginx/dev/conf:/etc/nginx/conf.d
       - ./nginx/dev/certs:/etc/nginx/certs
-    depends_on:
-      - portfolio-frontend-nextjs-dev
+    networks:
+      - webnet-dev
+    develop:
+      watch:
+        - action: rebuild
+          path: ./nginx/dev/conf/*
+  db-dev:
+    profiles: [dev]
+    restart: unless-stopped
+    image: postgres:14.2-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - db_data_dev:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
     networks:
       - webnet-dev
 
   portfolio-frontend-nextjs:
     profiles: [prod]
+    restart: unless-stopped
     build:
       context: ./portfolio-frontend-nextjs
     environment:
       - NODE_ENV=production
       - WEBSITE_URL=https://dihor.dev
+      - BACKEND_HOSTNAME=http://portfolio-backend-fastapi:8000
     networks:
       - webnet
+    volumes:
+      - /root/.cache/pypoetry/virtualenvs
   nginx:
     profiles: [prod]
+    restart: unless-stopped
     image: nginx:alpine
     ports:
       - "80:80"
@@ -54,13 +102,23 @@ services:
     volumes:
       - ./nginx/conf:/etc/nginx/conf.d
       - ./nginx/certs:/etc/nginx/certs
-    depends_on:
-      - portfolio-frontend-nextjs
     networks:
       - webnet
+  db:
+    profiles: [prod]
+    restart: unless-stopped
+    image: postgres:14.2-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "!Sniffer96"
+      POSTGRES_DB: postgres
 
 networks:
   webnet:
     driver: bridge
   webnet-dev:
     driver: bridge
+
+volumes:
+  db_data: {}
+  db_data_dev: {}
