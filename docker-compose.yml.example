@@ -5,15 +5,16 @@ services:
     restart: unless-stopped
     build:
       context: ./portfolio-frontend-nextjs
+      dockerfile: Dev.dockerfile
     volumes:
       - /app/node_modules
       - /app/.next
-    #ports:
-    #  - '3000:3000'
     environment:
       - NODE_ENV=development
-      - WEBSITE_URL=https://localhost
+      - WEBSITE_URL=https://
       - BACKEND_HOSTNAME=http://portfolio-backend-fastapi-dev:8000
+      - RECAPTCHA_SITE_KEY=
+      - NEXT_PUBLIC_RECAPTCHA_SITE_KEY=
     command: ['npm', 'run', 'dev']
     develop:
       watch:
@@ -23,7 +24,7 @@ services:
         - action: rebuild
           path: ./portfolio-frontend-nextjs/package.json
         - action: rebuild
-          path: ./portfolio-frontend-nextjs/package.lock
+          path: ./portfolio-frontend-nextjs/package-lock.json
     networks:
       - webnet-dev
   portfolio-backend-fastapi-dev:
@@ -32,10 +33,11 @@ services:
     build:
       context: ./portfolio-backend-fastapi
     environment:
-      - DATABASE_URI=postgresql://portfolio:portfolio@db-dev/portfolio
+      - DATABASE_URI=postgresql+psycopg2://USER:PASS@db-dev/DB_NAME
       - APP_SECRET=dihordev
-    #ports:
-    #  - "8000:8000"
+      - GOOGLE_PROJECT_ID=
+      - RECAPTCHA_SECRET_KEY=
+      - RECAPTCHA_API_KEY=
     command: ["poetry", "run", "uvicorn", "portfolio_backend_fastapi.main:app", "--host=0.0.0.0", "--reload"]
     networks:
       - webnet-dev
@@ -84,18 +86,40 @@ services:
     restart: unless-stopped
     build:
       context: ./portfolio-frontend-nextjs
+    depends_on:
+      - portfolio-backend-fastapi
     environment:
       - NODE_ENV=production
       - WEBSITE_URL=https://dihor.dev
       - BACKEND_HOSTNAME=http://portfolio-backend-fastapi:8000
+      - RECAPTCHA_SITE_KEY=
+      - NEXT_PUBLIC_RECAPTCHA_SITE_KEY=
     networks:
       - webnet
     volumes:
       - /root/.cache/pypoetry/virtualenvs
+  portfolio-backend-fastapi:
+    profiles: [prod]
+    restart: unless-stopped
+    build:
+      context: ./portfolio-backend-fastapi
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URI=postgresql+psycopg2://USER:PASS@db/DB_NAME
+      - APP_SECRET=dihordev_prod
+      - GOOGLE_PROJECT_ID=
+      - RECAPTCHA_SECRET_KEY=
+      - RECAPTCHA_API_KEY=
+    networks:
+      - webnet
   nginx:
     profiles: [prod]
     restart: unless-stopped
     image: nginx:alpine
+    depends_on:
+      - portfolio-frontend-nextjs
+      - portfolio-backend-fastapi
     ports:
       - "80:80"
       - "443:443"
@@ -108,9 +132,11 @@ services:
     profiles: [prod]
     restart: unless-stopped
     image: postgres:14.2-alpine
+    networks:
+      - webnet
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: "!Sniffer96"
+      POSTGRES_PASSWORD:
       POSTGRES_DB: postgres
 
 networks:
