@@ -1,3 +1,10 @@
 nginx/certs/*.crt
 nginx/certs/*.key
+nginx/certs/*.pem
+
+nginx/dev/certs/*.crt
+nginx/dev/certs/*.key
+nginx/dev/certs/*.pem
+
 docker-compose.yml
+.idea/
