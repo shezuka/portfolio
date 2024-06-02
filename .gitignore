@@ -7,4 +7,5 @@ nginx/dev/certs/*.key
 nginx/dev/certs/*.pem
 
 docker-compose.yml
+docker-compose.*.yml
 .idea/

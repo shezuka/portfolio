@@ -1,0 +1,15 @@
+[submodule "diol-pdf-frontend"]
+	path = diol-pdf-frontend
+	url = git@github.com:shezuka/diol-pdf-frontend.git
+[submodule "portfolio-backend-fastapi"]
+	path = portfolio-backend-fastapi
+	url = git@github.com:shezuka/portfolio-backend-fastapi.git
+[submodule "portfolio-frontend-nextjs"]
+	path = portfolio-frontend-nextjs
+	url = git@github.com:shezuka/portfolio-frontend-nextjs.git
+[submodule "task-management-backend"]
+	path = task-management-backend
+	url = git@github.com:shezuka/task-management-backend.git
+[submodule "task-management-frontend"]
+	path = task-management-frontend
+	url = git@github.com:shezuka/task-management-frontend.git
