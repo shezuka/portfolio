@@ -1,6 +1,9 @@
 [submodule "diol-pdf-frontend"]
 	path = diol-pdf-frontend
 	url = git@github.com:shezuka/diol-pdf-frontend.git
+[submodule "diol-pdf-backend"]
+	path = diol-pdf-backend
+	url = git@github.com:shezuka/diol-pdf-backend.git
 [submodule "portfolio-backend-fastapi"]
 	path = portfolio-backend-fastapi
 	url = git@github.com:shezuka/portfolio-backend-fastapi.git
