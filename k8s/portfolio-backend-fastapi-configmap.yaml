@@ -1,0 +1,13 @@
+﻿apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: portfolio-backend-configmap
+  labels:
+    name: portfolio-backend
+    app: portfolio-backend
+data:
+  DATABASE_URI: 'postgresql+psycopg2://portfolio:portfolio@postgres-service.default.svc.cluster.local/portfolio'
+  APP_SECRET: 'dihordev_prod'
+  GOOGLE_PROJECT_ID: 'portfolio-1715895301875'
+  RECAPTCHA_SECRET_KEY: '6LdDUt8pAAAAAOKvC_Hz_AfJw0aKXnuLzCU31l6i'
+  RECAPTCHA_API_KEY: 'AIzaSyCnV1EgfVn-X7XqHTi4Bd1-BYCVdTwLGz8'

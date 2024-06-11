@@ -1,0 +1,9 @@
+﻿apiVersion: skaffold/v4beta11
+kind: Config
+metadata:
+  name: portfolio
+manifests:
+  rawYaml:
+    - ./k8s/postgres-pv.yaml
+    - ./k8s/postgres-deployment.yaml
+    - ./k8s/postgres-service.yaml

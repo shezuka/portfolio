@@ -1,6 +1,6 @@
-﻿FROM jrcs/letsencrypt-nginx-proxy-companion
+﻿#FROM jrcs/letsencrypt-nginx-proxy-companion
+FROM nginx:alpine
 
 WORKDIR /etc/nginx
 COPY nginx.conf nginx.conf
-COPY certs certs
-COPY conf conf.d
+RUN rm conf.d/default.conf

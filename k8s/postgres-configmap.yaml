@@ -1,0 +1,10 @@
+﻿apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-secrets
+  labels:
+    app: portfolio
+data:
+  POSTGRES_DB: 'postgres'
+  POSTGRES_USER: 'postgres'
+  POSTGRES_PASSWORD: 'postgres'

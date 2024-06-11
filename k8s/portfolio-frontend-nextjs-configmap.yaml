@@ -1,0 +1,14 @@
+﻿apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: portfolio-frontend-configmap
+  labels:
+    name: portfolio-frontend
+    app: portfolio-frontend
+data:
+  NODE_ENV: 'production'
+  WEBSITE_URL: 'https://dihor.loc'
+  BACKEND_HOSTNAME: 'http://portfolio-backend-service.default.svc.cluster.local:8000'
+  NEXT_PUBLIC_BACKEND_HOSTNAME: 'https://dihor.loc'
+  RECAPTCHA_SITE_KEY: '6LdDUt8pAAAAAOKvC_Hz_AfJw0aKXnuLzCU31l6i'
+  NEXT_PUBLIC_RECAPTCHA_SITE_KEY: '6LdDUt8pAAAAAOKvC_Hz_AfJw0aKXnuLzCU31l6i'

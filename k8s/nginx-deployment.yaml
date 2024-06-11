@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+    name: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+      name: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+        name: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+            - containerPort: 443
+          volumeMounts:
+            - name: certs
+              mountPath: /etc/nginx/certs/dihor.loc
+              readOnly: true
+            - name: portfolio-conf
+              mountPath: /etc/nginx/conf.d/portfolio.conf
+              subPath: portfolio.conf
+              readOnly: true
+      volumes:
+        - name: certs
+          secret:
+            secretName: dihor.loc
+        - name: portfolio-conf
+          configMap:
+            name: nginx-conf-dihor.loc
+            items:
+              - key: portfolio.conf
+                path: portfolio.conf
