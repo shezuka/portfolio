@@ -6,7 +6,7 @@ metadata:
     name: portfolio-frontend
     app: portfolio-frontend
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       name: portfolio-frontend

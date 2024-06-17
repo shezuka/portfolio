@@ -1,9 +1,28 @@
 ﻿apiVersion: skaffold/v4beta11
 kind: Config
-metadata:
-  name: portfolio
+build:
+  artifacts:
+    - image: portfolio-frontend-nextjs
+      context: portfolio-frontend-nextjs
+      docker:
+        dockerfile: Dev.dockerfile
+      sync:
+        manual:
+          - src: '**/*'
+            dest: .
+    - image: portfolio-backend-fastapi
+      context: portfolio-backend-fastapi
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: '**/*'
+            dest: .
 manifests:
   rawYaml:
-    - ./k8s/postgres-pv.yaml
-    - ./k8s/postgres-deployment.yaml
-    - ./k8s/postgres-service.yaml
+    - k8s/portfolio-frontend-nextjs-deployment.yaml
+    - k8s/portfolio-frontend-nextjs-service.yaml
+    - k8s/portfolio-backend-fastapi-deployment.yaml
+    - k8s/portfolio-backend-fastapi-service.yaml
+    - k8s/nginx-deployment.yaml
+    - k8s/nginx-service.yaml
